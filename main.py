@@ -28,6 +28,9 @@ def main():
         # Create a DataFrame from the collected articles
         df_filtered = pd.DataFrame(all_articles)
 
+        # Define date
+        yesterday = datetime.now().date() - timedelta(days=1)
+
         # Save the filtered DataFrame as a JSON file to be pushed to GitHub
         file_path = f'processed_files/sky_articles_{yesterday}.json'
         result_dict = filtered_articles.convert_to_json(df_filtered, file_path)
