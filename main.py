@@ -1,10 +1,7 @@
 from functions import RSSParser
 import pandas as pd
 from datetime import datetime, timedelta
-import requests
-from bs4 import BeautifulSoup
-import json
-import xml.etree.ElementTree as ET
+import os
 
 # RSS feed URLs
 world_news = [
@@ -31,21 +28,37 @@ def main():
             parser.fetch_rss_data()
             parser.parse_rss_data()
             all_articles.extend(parser.get_articles())
+
         # Create a DataFrame from the collected articles
         df_filtered = pd.DataFrame(all_articles)
-    
-        # Define date
+
+        if df_filtered.empty:
+            print("No articles were fetched.")
+            return None
+
+        # Filter articles published yesterday
         today = datetime.now().date()
         yesterday = today - timedelta(days=1)
 
-        # Filter articles published yesterday
-        df_filtered = filtered_articles.filter_by_date()
+        # Replace invalid dates and filter
+        df_filtered['Date Published'] = pd.to_datetime(
+            df_filtered['Date Published'], errors='coerce'
+        )
+        df_filtered = df_filtered[df_filtered['Date Published'].dt.date == yesterday]
+
+        if df_filtered.empty:
+            print("No articles were published yesterday.")
+            return None
+
+        # Ensure output directory exists
+        output_dir = 'processed_files'
         
-        # Save the filtered DataFrame as a JSON file to be pushed to GitHub
-        file_path = f'processed_files/sky_articles_{yesterday}.json'
-        result_dict = parser.convert_to_json(df_filtered, file_path)
-        
-        return result_dict  # Return the dictionary
+        # Save the filtered DataFrame as a JSON file
+        file_path = f'{output_dir}/sky_articles_{yesterday}.json'
+        RSSParser.convert_to_json(df_filtered, file_path)
+
+        print(f"Articles saved to {file_path}")
+        return df_filtered  # Return the DataFrame for further use if needed
 
     except Exception as e:
         print(f"An error occurred: {e}")
