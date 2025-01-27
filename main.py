@@ -13,19 +13,20 @@ world_news = [
     ("https://feeds.skynews.com/feeds/rss/strange.xml", "Strange"),
 ]
 
-# Create the main class instance
-filtered_articles = FilteredArticles(world_news)
+# Initialize an empty list to collect all the articles
+all_articles = []
 
 def main():
     try:
-        # Fetch RSS articles
-        df_articles = filtered_articles.fetch_rss_articles()
-        
-        # Fetch webpage metadata
-        df_metadata = filtered_articles.fetch_webpage_metadata()
-        
-        # Filter articles published today
-        df_filtered = filtered_articles.filter_by_date()
+        # Loop over each RSS feed URL and parse the data
+        for url, category in world_news:
+            print(f"Fetching data for category: {category}")
+            parser = RSSParser(url, category)
+            parser.fetch_rss_data()
+            parser.parse_rss_data()
+            all_articles.extend(parser.get_articles())
+        # Create a DataFrame from the collected articles
+        df_filtered = pd.DataFrame(all_articles)
 
         # Save the filtered DataFrame as a JSON file to be pushed to GitHub
         file_path = f'processed_files/sky_articles_{yesterday}.json'
