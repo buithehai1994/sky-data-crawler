@@ -1,6 +1,10 @@
 from functions import RSSParser
 import pandas as pd
 from datetime import datetime, timedelta
+import requests
+from bs4 import BeautifulSoup
+import json
+import xml.etree.ElementTree as ET
 
 # RSS feed URLs
 world_news = [
