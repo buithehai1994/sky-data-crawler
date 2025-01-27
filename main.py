@@ -37,3 +37,6 @@ def main():
     except Exception as e:
         print(f"An error occurred: {e}")
         return None  # Return None if an error occurs
+
+if __name__ == '__main__':
+    main()
