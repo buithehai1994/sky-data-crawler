@@ -14,11 +14,23 @@ world_news = [
 # Create the main class instance
 filtered_articles = FilteredArticles(world_news)
 
-# Fetch RSS articles
-df_articles = filtered_articles.fetch_rss_articles()
+def main():
+    try:
+        # Fetch RSS articles
+        df_articles = filtered_articles.fetch_rss_articles()
+        
+        # Fetch webpage metadata
+        df_metadata = filtered_articles.fetch_webpage_metadata()
+        
+        # Filter articles published today
+        df_filtered = filtered_articles.filter_by_date()
 
-# Fetch webpage metadata
-df_metadata = filtered_articles.fetch_webpage_metadata()
+        # Save the filtered DataFrame as a JSON file to be pushed to GitHub
+        file_path = f'processed_files/sky_articles_{yesterday}.json'
+        result_dict = filtered_articles.convert_to_json(df_filtered, file_path)
+        
+        return result_dict  # Return the dictionary
 
-# Filter articles published today
-df_filtered = filtered_articles.filter_by_date()
+    except Exception as e:
+        print(f"An error occurred: {e}")
+        return None  # Return None if an error occurs
