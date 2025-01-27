@@ -1,0 +1,94 @@
+import requests
+from bs4 import BeautifulSoup
+import json
+import xml.etree.ElementTree as ET
+
+class RSSParser:
+    def __init__(self, rss_url, category):
+        self.rss_url = rss_url
+        self.category = category
+        self.rss_data = None
+        self.items = []
+
+    def fetch_rss_data(self):
+        # Fetch the RSS feed from the provided URL
+        response = requests.get(self.rss_url)
+        if response.status_code == 200:
+            self.rss_data = response.text
+        else:
+            print(f"Failed to fetch RSS feed from {self.rss_url}. Status code: {response.status_code}")
+
+    def parse_rss_data(self):
+        if self.rss_data:
+            # Parse the XML from the fetched RSS data
+            root = ET.fromstring(self.rss_data)
+
+            # Find all the 'item' elements in the RSS feed
+            for item in root.findall(".//item"):
+                title = item.find("title").text
+                link = item.find("link").text
+                description = item.find("description").text
+                # pub_date = item.find("pubDate").text
+                enclosure_url = item.find(".//enclosure").get("url") if item.find(".//enclosure") is not None else None
+
+                # If no image URL is found, set a placeholder
+                image_url = enclosure_url if enclosure_url else "https://via.placeholder.com/150"
+
+                # Extract additional details from the article
+                content, authors, date_published, article_title, subtitle = self.extract_article_details(link)
+
+                # Append to the items list as separate columns
+                self.items.append({
+                    "title": article_title,
+                    "description": description,
+                    "url": link,
+                    "image_url": image_url,
+                    "type": self.category,  # Add the category
+                    "Author": authors,
+                    "Date Published": date_published,
+                    "Headline": subtitle,
+                    "Content": content,
+
+                })
+
+    def extract_article_details(self, url):
+        # Extract content, authors, date published, title, and subtitle
+        try:
+            response = requests.get(url)
+            soup = BeautifulSoup(response.content, 'html.parser')
+
+            # Extract article content
+            paragraphs = soup.find_all('p')
+            content = '\n'.join([p.get_text(strip=True) for p in paragraphs])
+
+            # Extract JSON metadata from <script> tag
+            script_tag = soup.find('script', type='application/ld+json')
+            json_data = json.loads(script_tag.string) if script_tag else {}
+
+            # Extract author(s)
+            authors = []
+            if "author" in json_data:
+                author_info = json_data["author"]
+                if isinstance(author_info, list):
+                    authors = [author.get("name", "Unknown") for author in author_info]
+                else:
+                    authors = [author_info.get("name", "Unknown")]
+            authors_text = ", ".join(authors)
+
+            # Extract publication date
+            date_published = json_data.get("datePublished", "No publication date found.")
+
+            # Extract title and subtitle
+            article_title = soup.find('h1', class_='sdc-article-header__title')
+            title_text = article_title.find('span', class_='sdc-article-header__long-title').get_text() if article_title else "No title found"
+
+            subtitle = soup.find('p', class_='sdc-article-header__sub-title')
+            subtitle_text = subtitle.get_text() if subtitle else "No subtitle found"
+
+            return content, authors_text, date_published, title_text, subtitle_text
+        except Exception as e:
+            print(f"Error extracting details from {url}: {e}")
+            return "Failed to extract content", "Unknown", "Unknown", "Unknown", "Unknown"
+
+    def get_articles(self):
+        return self.items
