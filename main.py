@@ -1,4 +1,6 @@
 from functions import RSSParser
+import pandas as pd
+from datetime import datetime, timedelta
 
 # RSS feed URLs
 world_news = [
