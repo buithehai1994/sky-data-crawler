@@ -93,6 +93,22 @@ class RSSParser:
     def get_articles(self):
         return self.items
 
+    def filter_by_date(self):
+        # Replace invalid date entries with NaT
+        self.df['Date Published'] = pd.to_datetime(
+            self.df['Date Published'], 
+            errors='coerce',  # This will convert invalid dates to NaT
+            format='%Y-%m-%dT%H:%M:%S.%f%z'  # Adjust the format if necessary
+        )
+        
+        # Get today's date and subtract one day
+        today = datetime.now().date() - timedelta(days=1)
+        
+        # Filter articles published today, ignoring NaT
+        filtered_df = self.df[self.df['Date Published'].dt.date == today]
+        
+        return filtered_df
+
     @staticmethod
     def convert_to_json(df, file_path):
         """
