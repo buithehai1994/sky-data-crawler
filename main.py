@@ -1,4 +1,4 @@
-from functions.py import FilteredArticles
+from functions import FilteredArticles
 
 # RSS feed URLs
 world_news = [
