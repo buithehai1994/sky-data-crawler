@@ -1,4 +1,4 @@
-from functions import FilteredArticles
+from functions import RSSParser
 
 # RSS feed URLs
 world_news = [
