@@ -2,13 +2,15 @@ from functions.py import FilteredArticles
 
 # RSS feed URLs
 world_news = [
-    'https://feeds.bbci.co.uk/news/business/rss.xml?edition=uk',
-    'https://feeds.bbci.co.uk/news/education/rss.xml?edition=uk',
-    'https://feeds.bbci.co.uk/news/entertainment_and_arts/rss.xml?edition=uk',
-    'https://feeds.bbci.co.uk/news/health/rss.xml?edition=uk',
-    'https://feeds.bbci.co.uk/news/technology/rss.xml?edition=uk',
-    'https://feeds.bbci.co.uk/news/world/rss.xml?edition=uk',
-    'https://feeds.bbci.co.uk/news/science_and_environment/rss.xml?edition=uk'
+    ("https://feeds.skynews.com/feeds/rss/home.xml", "Home"),
+    ("https://feeds.skynews.com/feeds/rss/uk.xml", "UK"),
+    ("https://feeds.skynews.com/feeds/rss/world.xml", "World"),
+    ("https://feeds.skynews.com/feeds/rss/us.xml", "US"),
+    ("https://feeds.skynews.com/feeds/rss/business.xml", "Business"),
+    ("https://feeds.skynews.com/feeds/rss/politics.xml", "Politics"),
+    ("https://feeds.skynews.com/feeds/rss/technology.xml", "Technology"),
+    ("https://feeds.skynews.com/feeds/rss/entertainment.xml", "Entertainment"),
+    ("https://feeds.skynews.com/feeds/rss/strange.xml", "Strange"),
 ]
 
 # Create the main class instance
