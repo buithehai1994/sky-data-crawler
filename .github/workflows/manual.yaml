@@ -33,7 +33,7 @@ jobs:
     - name: Commit and push changes to repository
       run: |
         YESTERDAY=$(date -d "yesterday" '+%Y-%m-%d')  # Get yesterday's date
-        FILE_PATH="processed_files/bbc_articles_${YESTERDAY}.json"
+        FILE_PATH="processed_files/sky_articles_${YESTERDAY}.json"
         
         if [ -f "$FILE_PATH" ]; then
           # Configure Git with your email and username
