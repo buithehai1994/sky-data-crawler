@@ -39,7 +39,7 @@ def main():
         yesterday = today - timedelta(days=1)
 
         # Save the filtered DataFrame as a JSON file to be pushed to GitHub
-        file_path = f'processed_files/sky_articles_{today}.json'
+        file_path = f'processed_files/sky_articles_{yesterday}.json'
         result_dict = parser.convert_to_json(df_filtered, file_path)
         
         return result_dict  # Return the dictionary
