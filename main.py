@@ -35,10 +35,11 @@ def main():
         df_filtered = pd.DataFrame(all_articles)
 
         # Define date
-        yesterday = datetime.now().date() - timedelta(days=1)
+        today = datetime.now().date()
+        yesterday = today - timedelta(days=1)
 
         # Save the filtered DataFrame as a JSON file to be pushed to GitHub
-        file_path = f'processed_files/sky_articles_{yesterday}.json'
+        file_path = f'processed_files/sky_articles_{today}.json'
         result_dict = parser.convert_to_json(df_filtered, file_path)
         
         return result_dict  # Return the dictionary
