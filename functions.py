@@ -55,11 +55,23 @@ class RSSParser:
         # Extract content, authors, date published, title, and subtitle
         try:
             response = requests.get(url)
+            # Parse the HTML content with BeautifulSoup
             soup = BeautifulSoup(response.content, 'html.parser')
 
-            # Extract article content
-            paragraphs = soup.find_all('p')
-            content = '\n'.join([p.get_text(strip=True) for p in paragraphs])
+            # Extract the main content by selecting relevant <p> tags
+            main_content = []
+
+            # Find all paragraphs with content (you might filter more based on class names)
+            for p in soup.find_all('p'):
+                # Skip paragraphs that are part of the header, date, or non-content elements
+                if not any(cls in p.get('class', []) for cls in ['sdc-article-header', 'sdc-site-video', 'sdc-article-date__date-time', 
+                                                                'sdc-article-header__sub-title', 'sdc-site-component-header--h2',
+                                                                'sdc-site-video__accessibility-message','ui-app-promo-headline','ui-app-promo-cta',
+                                                                'sdc-article-strapline__text','strong']):
+                    main_content.append(p.get_text())
+
+            # Join the list of paragraphs into a full article text
+            content = " ".join(main_content)
 
             # Extract JSON metadata from <script> tag
             script_tag = soup.find('script', type='application/ld+json')
